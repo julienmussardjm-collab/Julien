@@ -336,7 +336,7 @@
 
   <div id="screen-password" class="screen active">
     <div class="card" id="password-card">
-      <h1>Acces prive</h1>
+      <h1>Accès privé</h1>
       <p class="subtitle">Petit test secret avant d'entrer.</p>
       <p class="password-hint-question" id="password-hint-question"></p>
       <div class="form-group">
@@ -373,40 +373,40 @@
   <script>
     const CONFIG = {
       PASSWORD: "Nala",
-      PASSWORD_HINT_QUESTION: "Dans la video culte, elle saute depuis le dressing... et ensuite, tu m'appelles comment juste apres ?",
-      HINT: "Un prenom qui nous suit partout.",
-      QUESTION: "Qui est l'homme qui te supporte ?",
-      QUESTION_HINT: "Tu connais la regle: mauvaise reponse = le bouton vert devient impossible a ignorer.",
+      PASSWORD_HINT_QUESTION: "Qui tombe du dressing ?",
+      HINT: "Un prénom qui nous suit partout.",
+      QUESTION: "qui c'est que j'aime ?",
+      QUESTION_HINT: "Tu connais la règle: mauvaise réponse = le bouton vert devient impossible à ignorer.",
       GREEN_PHRASES: [
-        "Bibi",
-        "Bibi, evidemment.",
-        "C'est Bibi.",
-        "Reponse correcte: Bibi.",
-        "Clique ici, c'est Bibi.",
-        "La bonne reponse: Bibi.",
-        "Tu sais que c'est Bibi.",
-        "Arrete de fuir, c'est Bibi.",
-        "Bibi, toujours Bibi.",
-        "Accepte l'evidence: Bibi.",
-        "C'est Bibi, point final.",
-        "Bibi, et personne d'autre."
+        "Toi, évidemment.",
+        "Toi.",
+        "Toi, c'est évident.",
+        "Réponse correcte: toi.",
+        "Clique ici, c'est le destin.",
+        "La bonne réponse: toi.",
+        "Tu sais que c'est toi.",
+        "Arrête de fuir, c'est toi.",
+        "Toi, toujours toi.",
+        "Accepte l'évidence: toi.",
+        "C'est toi, point final.",
+        "Toi, et personne d'autre."
       ],
       RED_PHRASES: [
         "Non.",
-        "T'es sure de toi ?",
+        "T'es sûre de toi ?",
         "Recalcul...",
         "Je te laisse une chance.",
-        "C'est un piege tres simple.",
+        "C'est un piège très simple.",
         "Dernier essai.",
         "Vraiment ?",
         "Tu insistes ?",
-        "Reflechis encore.",
+        "Réfléchis encore.",
         "Mauvaise direction.",
         "Toujours pas ?",
-        "Derniere tentative."
+        "Dernière tentative."
       ],
-      VICTORY_TITLE: "Valide.",
-      VICTORY_MESSAGE: "Acces accorde. Je savais que tu te souvenais.",
+      VICTORY_TITLE: "Validé.",
+      VICTORY_MESSAGE: "Accès accordé. Je savais que tu te souvenais.",
       FLOATING_IMAGES: [
         "WhatsApp%20Image%202026-02-17%20at%2019.34.05%20(1).jpeg",
         "WhatsApp%20Image%202026-02-17%20at%2019.34.05.jpeg",
@@ -423,6 +423,7 @@
 
     let redClickCount = 0;
     let greenScale = 1;
+    let redScale = 1;
     let floatingImagesInterval = null;
     
     // Variables pour le chat qui rebondit
@@ -470,6 +471,7 @@
       victoryMessage.textContent = CONFIG.VICTORY_MESSAGE;
       redClickCount = 0;
       greenScale = 1;
+      redScale = 1;
       updateButtonScales();
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
@@ -609,7 +611,7 @@
           passwordCard.style.transform = 'translateY(0)';
         }, 400);
       } else {
-        errorMessage.textContent = 'Ce n'est pas tout a fait ca...';
+        errorMessage.textContent = "Ce n'est pas tout à fait ça...";
         passwordCard.classList.add('shake');
         setTimeout(() => { passwordCard.classList.remove('shake'); }, 500);
         passwordInput.value = '';
@@ -623,6 +625,7 @@
 
     function updateButtonScales() {
       btnGreen.style.transform = 'scale(' + greenScale + ')';
+      btnRed.style.transform = 'scale(' + redScale + ')';
     }
 
     function updateButtonTexts() {
@@ -635,6 +638,7 @@
     btnRed.addEventListener('click', () => {
       redClickCount++;
       greenScale = Math.min(greenScale + 0.15, 2.0);
+      redScale = Math.max(redScale - 0.05, 0.7);
       updateButtonScales();
       updateButtonTexts();
       if (navigator.vibrate) navigator.vibrate(50);
@@ -707,6 +711,7 @@
       hintText.classList.remove('visible');
       redClickCount = 0;
       greenScale = 1;
+      redScale = 1;
       updateButtonScales();
       btnGreen.textContent = CONFIG.GREEN_PHRASES[0];
       btnRed.textContent = CONFIG.RED_PHRASES[0];
