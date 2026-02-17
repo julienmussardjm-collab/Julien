@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Accès privé</title>
   <style>
-    /* ============================================
-       STYLES - Mini site mignon
-       ============================================ */
     * {
       margin: 0;
       padding: 0;
@@ -25,7 +22,6 @@
       overflow: hidden;
     }
 
-    /* Écrans */
     .screen {
       display: none;
       width: 100%;
@@ -39,7 +35,6 @@
       display: block;
     }
 
-    /* Carte principale */
     .card {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 24px;
@@ -49,7 +44,6 @@
       backdrop-filter: blur(10px);
     }
 
-    /* Animation shake */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
@@ -60,13 +54,11 @@
       animation: shake 0.5s ease;
     }
 
-    /* Animation fade in */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Titres */
     h1 {
       color: #e8788a;
       font-size: 1.8rem;
@@ -96,7 +88,6 @@
       font-style: italic;
     }
 
-    /* Formulaire mot de passe */
     .form-group {
       margin-bottom: 20px;
       text-align: left;
@@ -120,13 +111,12 @@
       background: #faf8fa;
     }
 
-    input[type="password"]:focus {
+    input[type="password":focus] {
       outline: none;
       border-color: #e8788a;
       box-shadow: 0 0 0 4px rgba(232, 120, 138, 0.15);
     }
 
-    /* Messages */
     .error-message {
       color: #e87878;
       font-size: 0.85rem;
@@ -135,7 +125,6 @@
       transition: all 0.3s ease;
     }
 
-    /* Boutons */
     .btn {
       padding: 14px 28px;
       border: none;
@@ -194,7 +183,17 @@
       max-height: 50px;
     }
 
-    /* Boutons question */
+    .password-hint-question {
+      color: #6b5b7a;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, #f8f4ff, #fff5f5);
+      border-radius: 12px;
+      border-left: 4px solid #e8788a;
+    }
+
     .buttons-container {
       display: flex;
       flex-wrap: wrap;
@@ -223,7 +222,6 @@
       box-shadow: 0 6px 20px rgba(244, 165, 176, 0.4);
     }
 
-    /* Animation micro-vibration */
     @keyframes microVibrate {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-2px); }
@@ -234,7 +232,6 @@
       animation: microVibrate 0.15s ease 2;
     }
 
-    /* Écran victoire */
     .victory-title {
       color: #7ec8a3;
       font-size: 2.2rem;
@@ -258,7 +255,6 @@
       box-shadow: 0 8px 25px rgba(184, 169, 201, 0.4);
     }
 
-    /* Canvas confettis */
     #confetti-canvas {
       position: fixed;
       top: 0;
@@ -269,9 +265,6 @@
       z-index: 1000;
     }
 
-    /* ============================================
-       IMAGES FLOTTANTES
-       ============================================ */
     .floating-images-container {
       position: fixed;
       top: 0;
@@ -300,104 +293,52 @@
     }
 
     @keyframes float {
-      0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-      }
-      25% {
-        transform: translateY(-15px) rotate(2deg);
-      }
-      50% {
-        transform: translateY(-5px) rotate(-1deg);
-      }
-      75% {
-        transform: translateY(-20px) rotate(-2deg);
-      }
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      25% { transform: translateY(-15px) rotate(2deg); }
+      50% { transform: translateY(-5px) rotate(-1deg); }
+      75% { transform: translateY(-20px) rotate(-2deg); }
     }
 
     .floating-image.animate {
       animation: float 6s ease-in-out infinite;
     }
 
-    /* Responsive */
     @media (max-width: 480px) {
-      .card {
-        padding: 32px 24px;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .question-text {
-        font-size: 1rem;
-      }
-
-      .btn {
-        padding: 12px 20px;
-        font-size: 0.95rem;
-      }
-
-      .buttons-container {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .btn-green, .btn-red {
-        width: 100%;
-        max-width: 250px;
-      }
-
-      .floating-image {
-        width: 80px;
-        height: 80px;
-      }
+      .card { padding: 32px 24px; }
+      h1 { font-size: 1.5rem; }
+      .question-text { font-size: 1rem; }
+      .btn { padding: 12px 20px; font-size: 0.95rem; }
+      .buttons-container { flex-direction: column; align-items: center; }
+      .btn-green, .btn-red { width: 100%; max-width: 250px; }
+      .floating-image { width: 80px; height: 80px; }
     }
   </style>
 </head>
 <body>
-
-  <!-- Canvas pour les confettis -->
   <canvas id="confetti-canvas"></canvas>
-
-  <!-- Container pour les images flottantes -->
   <div class="floating-images-container" id="floating-container"></div>
 
-  <!-- ============================================
-       ÉCRAN 1 : Mot de passe
-       ============================================ -->
   <div id="screen-password" class="screen active">
     <div class="card" id="password-card">
       <h1>Acces prive</h1>
       <p class="subtitle">Petit test secret avant d'entrer.</p>
-      
+      <p class="password-hint-question" id="password-hint-question"></p>
       <div class="form-group">
         <label for="password-input">Mot de passe</label>
-        <input 
-          type="password" 
-          id="password-input" 
-          placeholder="Entre le mot magique..."
-          autocomplete="off"
-        >
+        <input type="password" id="password-input" placeholder="Entre le mot magique..." autocomplete="off">
       </div>
-      
       <button class="btn btn-primary" id="submit-password">Entrer</button>
-      
       <p class="error-message" id="error-message"></p>
-      
       <button class="btn btn-hint" id="hint-btn">Indice</button>
       <p class="hint-reveal" id="hint-text"></p>
     </div>
   </div>
 
-  <!-- ============================================
-       ÉCRAN 2 : Question
-       ============================================ -->
   <div id="screen-question" class="screen">
     <div class="card">
       <h1>La question</h1>
       <p class="question-text" id="question-text"></p>
       <p class="hint-text" id="question-hint"></p>
-      
       <div class="buttons-container">
         <button class="btn btn-green" id="btn-green"></button>
         <button class="btn btn-red" id="btn-red"></button>
@@ -405,9 +346,6 @@
     </div>
   </div>
 
-  <!-- ============================================
-       ÉCRAN 3 : Victoire
-       ============================================ -->
   <div id="screen-victory" class="screen">
     <div class="card">
       <h1 class="victory-title" id="victory-title"></h1>
@@ -417,39 +355,26 @@
   </div>
 
   <script>
-    /* ============================================
-       CONFIGURATION - Modifiable
-       ============================================ */
     const CONFIG = {
-      // Mot de passe requis
       PASSWORD: "Nala",
-      
-      // Indice pour le mot de passe
+      PASSWORD_HINT_QUESTION: "Dans la video culte, elle saute depuis le dressing... et ensuite, tu m'appelles comment juste apres ?",
       HINT: "Un prenom qui nous suit partout.",
-      
-      // Question principale
-      QUESTION: "Dans la video culte, elle saute depuis le dressing... et ensuite, tu m'appelles comment juste apres ?",
-      
-      // Sous-texte de la question
+      QUESTION: "Qui est l'homme qui te supporte ?",
       QUESTION_HINT: "Tu connais la regle: mauvaise reponse = le bouton vert devient impossible a ignorer.",
-      
-      // Phrases du bouton vert (réponse positive)
       GREEN_PHRASES: [
-        "Toi, evidemment.",
-        "Toi.",
-        "Toi, c'est evident.",
-        "Reponse correcte: toi.",
-        "Clique ici, c'est le destin.",
-        "La bonne reponse est la.",
-        "Tu sais que c'est toi.",
-        "Arrete de fuir, c'est toi.",
-        "Toi, toujours toi.",
-        "Accepte l'evidence.",
-        "C'est toi, point final.",
-        "Toi, et personne d'autre."
+        "Bibi",
+        "Bibi, evidemment.",
+        "C'est Bibi.",
+        "Reponse correcte: Bibi.",
+        "Clique ici, c'est Bibi.",
+        "La bonne reponse: Bibi.",
+        "Tu sais que c'est Bibi.",
+        "Arrete de fuir, c'est Bibi.",
+        "Bibi, toujours Bibi.",
+        "Accepte l'evidence: Bibi.",
+        "C'est Bibi, point final.",
+        "Bibi, et personne d'autre."
       ],
-      
-      // Phrases du bouton rouge (réponse négative)
       RED_PHRASES: [
         "Non.",
         "T'es sure de toi ?",
@@ -464,12 +389,8 @@
         "Toujours pas ?",
         "Derniere tentative."
       ],
-      
-      // Messages de victoire
       VICTORY_TITLE: "Valide.",
       VICTORY_MESSAGE: "Acces accorde. Je savais que tu te souvenais.",
-
-      // Images flottantes (URLs des photos)
       FLOATING_IMAGES: [
         "WhatsApp%20Image%202026-02-17%20at%2019.34.05%20(1).jpeg",
         "WhatsApp%20Image%202026-02-17%20at%2019.34.05.jpeg",
@@ -483,18 +404,10 @@
       ]
     };
 
-    /* ============================================
-       VARIABLES GLOBALES
-       ============================================ */
     let redClickCount = 0;
     let greenScale = 1;
-    let redScale = 1;
     let floatingImagesInterval = null;
-    let activeImages = [];
 
-    /* ============================================
-       ÉLÉMENTS DOM
-       ============================================ */
     const screenPassword = document.getElementById('screen-password');
     const screenQuestion = document.getElementById('screen-question');
     const screenVictory = document.getElementById('screen-victory');
@@ -504,6 +417,7 @@
     const errorMessage = document.getElementById('error-message');
     const hintBtn = document.getElementById('hint-btn');
     const hintText = document.getElementById('hint-text');
+    const passwordHintQuestion = document.getElementById('password-hint-question');
     const questionText = document.getElementById('question-text');
     const questionHint = document.getElementById('question-hint');
     const btnGreen = document.getElementById('btn-green');
@@ -515,18 +429,13 @@
     const ctx = confettiCanvas.getContext('2d');
     const floatingContainer = document.getElementById('floating-container');
 
-    /* ============================================
-       INITIALISATION
-       ============================================ */
     function init() {
-      // Vérification anti-curieux
       if (!sessionStorage.getItem('authenticated')) {
         showScreen('password');
       } else {
         showScreen('question');
       }
-      
-      // Initialiser les textes
+      passwordHintQuestion.textContent = CONFIG.PASSWORD_HINT_QUESTION;
       questionText.textContent = CONFIG.QUESTION;
       questionHint.textContent = CONFIG.QUESTION_HINT;
       hintText.textContent = CONFIG.HINT;
@@ -534,29 +443,18 @@
       btnRed.textContent = CONFIG.RED_PHRASES[0];
       victoryTitle.textContent = CONFIG.VICTORY_TITLE;
       victoryMessage.textContent = CONFIG.VICTORY_MESSAGE;
-      
-      // Réinitialiser les compteurs
       redClickCount = 0;
       greenScale = 1;
-      redScale = 1;
       updateButtonScales();
-      
-      // Configurer le canvas
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
     }
 
-    /* ============================================
-       GESTION DES ÉCRANS
-       ============================================ */
     function showScreen(screenName) {
       screenPassword.classList.remove('active');
       screenQuestion.classList.remove('active');
       screenVictory.classList.remove('active');
-      
-      // Arrêter les images flottantes
       stopFloatingImages();
-      
       switch(screenName) {
         case 'password':
           screenPassword.classList.add('active');
@@ -573,60 +471,33 @@
       }
     }
 
-    /* ============================================
-       IMAGES FLOTTANTES
-       ============================================ */
     function createFloatingImage() {
       const img = document.createElement('img');
       img.classList.add('floating-image');
-      
-      // Choisir une image aléatoire
       const randomIndex = Math.floor(Math.random() * CONFIG.FLOATING_IMAGES.length);
       img.src = CONFIG.FLOATING_IMAGES[randomIndex];
-      
-      // Position aléatoire
       const maxX = window.innerWidth - 150;
       const maxY = window.innerHeight - 150;
       img.style.left = Math.random() * maxX + 'px';
       img.style.top = Math.random() * maxY + 'px';
-      
-      // Délai d'animation aléatoire
       img.style.animationDelay = Math.random() * 2 + 's';
-      
       floatingContainer.appendChild(img);
-      
-      // Faire apparaître avec animation
-      setTimeout(() => {
-        img.classList.add('visible', 'animate');
-      }, 100);
-      
-      // Faire disparaître après un moment
+      setTimeout(() => { img.classList.add('visible', 'animate'); }, 100);
       const displayTime = 4000 + Math.random() * 3000;
       setTimeout(() => {
         img.classList.remove('visible');
-        setTimeout(() => {
-          if (img.parentNode) {
-            img.parentNode.removeChild(img);
-          }
-        }, 1500);
+        setTimeout(() => { if (img.parentNode) img.parentNode.removeChild(img); }, 1500);
       }, displayTime);
-      
       return img;
     }
 
     function startFloatingImages() {
-      // Créer quelques images initiales avec délai
       setTimeout(() => createFloatingImage(), 500);
       setTimeout(() => createFloatingImage(), 1500);
       setTimeout(() => createFloatingImage(), 2500);
-      
-      // Continuer à créer des images
       floatingImagesInterval = setInterval(() => {
-        // Maximum 4 images visibles
         const visibleImages = floatingContainer.querySelectorAll('.floating-image.visible');
-        if (visibleImages.length < 4) {
-          createFloatingImage();
-        }
+        if (visibleImages.length < 4) createFloatingImage();
       }, 2500);
     }
 
@@ -635,106 +506,57 @@
         clearInterval(floatingImagesInterval);
         floatingImagesInterval = null;
       }
-      // Retirer toutes les images
       floatingContainer.innerHTML = '';
     }
 
-    /* ============================================
-       ÉCRAN MOT DE PASSE
-       ============================================ */
     function checkPassword() {
       const value = passwordInput.value.trim();
-      
       if (value === CONFIG.PASSWORD) {
-        // Succès
         sessionStorage.setItem('authenticated', 'true');
         errorMessage.textContent = '';
-        
-        // Transition fluide
         passwordCard.style.opacity = '0';
         passwordCard.style.transform = 'translateY(-20px)';
-        
         setTimeout(() => {
           showScreen('question');
           passwordCard.style.opacity = '1';
           passwordCard.style.transform = 'translateY(0)';
         }, 400);
       } else {
-        // Erreur
         errorMessage.textContent = 'Ce n\'est pas tout a fait ca...';
         passwordCard.classList.add('shake');
-        
-        setTimeout(() => {
-          passwordCard.classList.remove('shake');
-        }, 500);
-        
+        setTimeout(() => { passwordCard.classList.remove('shake'); }, 500);
         passwordInput.value = '';
         passwordInput.focus();
       }
     }
 
-    // Événements mot de passe
     submitPassword.addEventListener('click', checkPassword);
-    
-    passwordInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        checkPassword();
-      }
-    });
+    passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkPassword(); });
+    hintBtn.addEventListener('click', () => { hintText.classList.toggle('visible'); });
 
-    // Indice
-    hintBtn.addEventListener('click', () => {
-      hintText.classList.toggle('visible');
-    });
-
-    /* ============================================
-       ÉCRAN QUESTION
-       ============================================ */
     function updateButtonScales() {
-      btnGreen.style.transform = `scale(${greenScale})`;
-      btnRed.style.transform = `scale(${redScale});
+      btnGreen.style.transform = 'scale(' + greenScale + ')';
     }
 
     function updateButtonTexts() {
       const greenIndex = Math.min(redClickCount, CONFIG.GREEN_PHRASES.length - 1);
       const redIndex = Math.min(redClickCount, CONFIG.RED_PHRASES.length - 1);
-      
       btnGreen.textContent = CONFIG.GREEN_PHRASES[greenIndex];
       btnRed.textContent = CONFIG.RED_PHRASES[redIndex];
     }
 
-    // Clic bouton rouge
     btnRed.addEventListener('click', () => {
       redClickCount++;
-      
-      // Agrandir le vert BEAUCOUP, et agrandir aussi le rouge (mais moins)
       greenScale = Math.min(greenScale + 0.15, 2.0);
-      redScale = Math.min(redScale + 0.08, 1.4);
       updateButtonScales();
-      
-      // Mettre à jour les textes
       updateButtonTexts();
-      
-      // Vibration si disponible
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
-      
-      // Animation micro-vibration CSS
+      if (navigator.vibrate) navigator.vibrate(50);
       btnRed.classList.add('vibrate');
-      setTimeout(() => {
-        btnRed.classList.remove('vibrate');
-      }, 300);
+      setTimeout(() => { btnRed.classList.remove('vibrate'); }, 300);
     });
 
-    // Clic bouton vert
-    btnGreen.addEventListener('click', () => {
-      showScreen('victory');
-    });
+    btnGreen.addEventListener('click', () => { showScreen('victory'); });
 
-    /* ============================================
-       ÉCRAN VICTOIRE - CONFETTIS
-       ============================================ */
     let confetti = [];
     let animationId = null;
 
@@ -745,7 +567,6 @@
 
     function createConfetti() {
       const colors = ['#e8788a', '#f4a5b0', '#7ec8a3', '#a8e6cf', '#b8a9c9', '#ffecd2', '#fcb69f'];
-      
       for (let i = 0; i < 150; i++) {
         confetti.push({
           x: Math.random() * confettiCanvas.width,
@@ -762,7 +583,6 @@
 
     function drawConfetti() {
       ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      
       confetti.forEach((c, index) => {
         ctx.save();
         ctx.translate(c.x, c.y);
@@ -770,19 +590,14 @@
         ctx.fillStyle = c.color;
         ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.6);
         ctx.restore();
-        
-        // Mise à jour position
         c.y += c.speedY;
         c.x += c.speedX;
         c.rotation += c.rotationSpeed;
-        
-        // Recycler les confettis qui sortent
         if (c.y > confettiCanvas.height + 20) {
           confetti[index].y = -20;
           confetti[index].x = Math.random() * confettiCanvas.width;
         }
       });
-      
       animationId = requestAnimationFrame(drawConfetti);
     }
 
@@ -790,8 +605,6 @@
       confetti = [];
       createConfetti();
       drawConfetti();
-      
-      // Arrêter après 5 secondes
       setTimeout(() => {
         if (animationId) {
           cancelAnimationFrame(animationId);
@@ -800,33 +613,24 @@
       }, 5000);
     }
 
-    // Bouton rejouer
     btnReplay.addEventListener('click', () => {
-      // Réinitialiser tout
       sessionStorage.removeItem('authenticated');
       passwordInput.value = '';
       errorMessage.textContent = '';
       hintText.classList.remove('visible');
       redClickCount = 0;
       greenScale = 1;
-      redScale = 1;
       updateButtonScales();
       btnGreen.textContent = CONFIG.GREEN_PHRASES[0];
       btnRed.textContent = CONFIG.RED_PHRASES[0];
-      
-      // Arrêter les confettis
       if (animationId) {
         cancelAnimationFrame(animationId);
         ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
       }
       confetti = [];
-      
       showScreen('password');
     });
 
-    /* ============================================
-       DÉMARRAGE
-       ============================================ */
     init();
   </script>
 </body>
