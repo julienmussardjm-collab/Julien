@@ -31,6 +31,8 @@
       width: 100%;
       max-width: 420px;
       animation: fadeIn 0.5s ease;
+      position: relative;
+      z-index: 10;
     }
 
     .screen.active {
@@ -267,6 +269,55 @@
       z-index: 1000;
     }
 
+    /* ============================================
+       IMAGES FLOTTANTES
+       ============================================ */
+    .floating-images-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .floating-image {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 16px;
+      opacity: 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transition: opacity 1.5s ease;
+      pointer-events: none;
+    }
+
+    .floating-image.visible {
+      opacity: 0.85;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      25% {
+        transform: translateY(-15px) rotate(2deg);
+      }
+      50% {
+        transform: translateY(-5px) rotate(-1deg);
+      }
+      75% {
+        transform: translateY(-20px) rotate(-2deg);
+      }
+    }
+
+    .floating-image.animate {
+      animation: float 6s ease-in-out infinite;
+    }
+
     /* Responsive */
     @media (max-width: 480px) {
       .card {
@@ -295,6 +346,11 @@
         width: 100%;
         max-width: 250px;
       }
+
+      .floating-image {
+        width: 80px;
+        height: 80px;
+      }
     }
   </style>
 </head>
@@ -302,6 +358,9 @@
 
   <!-- Canvas pour les confettis -->
   <canvas id="confetti-canvas"></canvas>
+
+  <!-- Container pour les images flottantes -->
+  <div class="floating-images-container" id="floating-container"></div>
 
   <!-- ============================================
        ÉCRAN 1 : Mot de passe
@@ -408,7 +467,20 @@
       
       // Messages de victoire
       VICTORY_TITLE: "Valide.",
-      VICTORY_MESSAGE: "Acces accorde. Je savais que tu te souvenais."
+      VICTORY_MESSAGE: "Acces accorde. Je savais que tu te souvenais.",
+
+      // Images flottantes (URLs des photos)
+      FLOATING_IMAGES: [
+        "WhatsApp%20Image%202026-02-17%20at%2019.34.05%20(1).jpeg",
+        "WhatsApp%20Image%202026-02-17%20at%2019.34.05.jpeg",
+        "WhatsApp%20Image%202026-02-17%20at%2019.35.00.jpeg",
+        "WhatsApp%20Image%202026-02-17%20at%2019.37.05%20(1).jpeg",
+        "WhatsApp%20Image%202026-02-17%20at%2019.37.05%20(2).jpeg",
+        "WhatsApp%20Image%202026-02-17%20at%2019.37.05%20(3).jpeg",
+        "WhatsApp%20Image%202026-02-17%20at%2019.37.05%20(4).jpeg",
+        "WhatsApp%20Image%202026-02-17%20at%2019.37.05%20(5).jpeg",
+        "WhatsApp%20Image%202026-02-17%20at%2019.37.05.jpeg"
+      ]
     };
 
     /* ============================================
@@ -417,6 +489,8 @@
     let redClickCount = 0;
     let greenScale = 1;
     let redScale = 1;
+    let floatingImagesInterval = null;
+    let activeImages = [];
 
     /* ============================================
        ÉLÉMENTS DOM
@@ -439,6 +513,7 @@
     const btnReplay = document.getElementById('btn-replay');
     const confettiCanvas = document.getElementById('confetti-canvas');
     const ctx = confettiCanvas.getContext('2d');
+    const floatingContainer = document.getElementById('floating-container');
 
     /* ============================================
        INITIALISATION
@@ -479,6 +554,9 @@
       screenQuestion.classList.remove('active');
       screenVictory.classList.remove('active');
       
+      // Arrêter les images flottantes
+      stopFloatingImages();
+      
       switch(screenName) {
         case 'password':
           screenPassword.classList.add('active');
@@ -486,12 +564,79 @@
           break;
         case 'question':
           screenQuestion.classList.add('active');
+          startFloatingImages();
           break;
         case 'victory':
           screenVictory.classList.add('active');
           startConfetti();
           break;
       }
+    }
+
+    /* ============================================
+       IMAGES FLOTTANTES
+       ============================================ */
+    function createFloatingImage() {
+      const img = document.createElement('img');
+      img.classList.add('floating-image');
+      
+      // Choisir une image aléatoire
+      const randomIndex = Math.floor(Math.random() * CONFIG.FLOATING_IMAGES.length);
+      img.src = CONFIG.FLOATING_IMAGES[randomIndex];
+      
+      // Position aléatoire
+      const maxX = window.innerWidth - 150;
+      const maxY = window.innerHeight - 150;
+      img.style.left = Math.random() * maxX + 'px';
+      img.style.top = Math.random() * maxY + 'px';
+      
+      // Délai d'animation aléatoire
+      img.style.animationDelay = Math.random() * 2 + 's';
+      
+      floatingContainer.appendChild(img);
+      
+      // Faire apparaître avec animation
+      setTimeout(() => {
+        img.classList.add('visible', 'animate');
+      }, 100);
+      
+      // Faire disparaître après un moment
+      const displayTime = 4000 + Math.random() * 3000;
+      setTimeout(() => {
+        img.classList.remove('visible');
+        setTimeout(() => {
+          if (img.parentNode) {
+            img.parentNode.removeChild(img);
+          }
+        }, 1500);
+      }, displayTime);
+      
+      return img;
+    }
+
+    function startFloatingImages() {
+      // Créer quelques images initiales avec délai
+      setTimeout(() => createFloatingImage(), 500);
+      setTimeout(() => createFloatingImage(), 1500);
+      setTimeout(() => createFloatingImage(), 2500);
+      
+      // Continuer à créer des images
+      floatingImagesInterval = setInterval(() => {
+        // Maximum 4 images visibles
+        const visibleImages = floatingContainer.querySelectorAll('.floating-image.visible');
+        if (visibleImages.length < 4) {
+          createFloatingImage();
+        }
+      }, 2500);
+    }
+
+    function stopFloatingImages() {
+      if (floatingImagesInterval) {
+        clearInterval(floatingImagesInterval);
+        floatingImagesInterval = null;
+      }
+      // Retirer toutes les images
+      floatingContainer.innerHTML = '';
     }
 
     /* ============================================
@@ -547,7 +692,7 @@
        ============================================ */
     function updateButtonScales() {
       btnGreen.style.transform = `scale(${greenScale})`;
-      btnRed.style.transform = `scale(${redScale})`;
+      btnRed.style.transform = `scale(${redScale});
     }
 
     function updateButtonTexts() {
@@ -562,9 +707,9 @@
     btnRed.addEventListener('click', () => {
       redClickCount++;
       
-      // Agrandir le vert, rétrécir le rouge
-      greenScale = Math.min(greenScale + 0.08, 1.6);
-      redScale = Math.max(redScale - 0.03, 0.7);
+      // Agrandir le vert BEAUCOUP, et agrandir aussi le rouge (mais moins)
+      greenScale = Math.min(greenScale + 0.15, 2.0);
+      redScale = Math.min(redScale + 0.08, 1.4);
       updateButtonScales();
       
       // Mettre à jour les textes
