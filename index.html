@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accès privé</title>
+  <style>
+    /* ============================================
+       STYLES - Mini site mignon
+       ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ffecd2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    /* Écrans */
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 420px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* Carte principale */
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 40px 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Animation shake */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+      20%, 40%, 60%, 80% { transform: translateX(8px); }
+    }
+
+    .card.shake {
+      animation: shake 0.5s ease;
+    }
+
+    /* Animation fade in */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Titres */
+    h1 {
+      color: #e8788a;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: #b8a9c9;
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+      font-style: italic;
+    }
+
+    .question-text {
+      color: #6b5b7a;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .hint-text {
+      color: #c9a7b0;
+      font-size: 0.8rem;
+      margin-bottom: 28px;
+      font-style: italic;
+    }
+
+    /* Formulaire mot de passe */
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      color: #8b7a8e;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #f0e6ef;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #faf8fa;
+    }
+
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #e8788a;
+      box-shadow: 0 0 0 4px rgba(232, 120, 138, 0.15);
+    }
+
+    /* Messages */
+    .error-message {
+      color: #e87878;
+      font-size: 0.85rem;
+      margin-top: 12px;
+      min-height: 20px;
+      transition: all 0.3s ease;
+    }
+
+    /* Boutons */
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 6px;
+    }
+
+    .btn:focus {
+      outline: 3px solid rgba(232, 120, 138, 0.5);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #e8788a, #f4a5b0);
+      color: white;
+      width: 100%;
+      margin: 0;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(232, 120, 138, 0.35);
+    }
+
+    .btn-hint {
+      background: transparent;
+      color: #b8a9c9;
+      font-size: 0.85rem;
+      padding: 10px 16px;
+      margin-top: 16px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .btn-hint:hover {
+      color: #8b7a8e;
+    }
+
+    .hint-reveal {
+      color: #c9a7b0;
+      font-size: 0.85rem;
+      margin-top: 12px;
+      font-style: italic;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .hint-reveal.visible {
+      opacity: 1;
+      max-height: 50px;
+    }
+
+    /* Boutons question */
+    .buttons-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #7ec8a3, #a8e6cf);
+      color: white;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-green:hover {
+      box-shadow: 0 8px 25px rgba(126, 200, 163, 0.4);
+    }
+
+    .btn-red {
+      background: linear-gradient(135deg, #f4a5b0, #f8c4c4);
+      color: white;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-red:hover {
+      box-shadow: 0 6px 20px rgba(244, 165, 176, 0.4);
+    }
+
+    /* Animation micro-vibration */
+    @keyframes microVibrate {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
+    }
+
+    .btn-red.vibrate {
+      animation: microVibrate 0.15s ease 2;
+    }
+
+    /* Écran victoire */
+    .victory-title {
+      color: #7ec8a3;
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+    }
+
+    .victory-message {
+      color: #8b7a8e;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .btn-replay {
+      background: linear-gradient(135deg, #b8a9c9, #d4c4e0);
+      color: white;
+    }
+
+    .btn-replay:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(184, 169, 201, 0.4);
+    }
+
+    /* Canvas confettis */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .card {
+        padding: 32px 24px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .question-text {
+        font-size: 1rem;
+      }
+
+      .btn {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+      }
+
+      .buttons-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn-green, .btn-red {
+        width: 100%;
+        max-width: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas pour les confettis -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- ============================================
+       ÉCRAN 1 : Mot de passe
+       ============================================ -->
+  <div id="screen-password" class="screen active">
+    <div class="card" id="password-card">
+      <h1>Acces prive</h1>
+      <p class="subtitle">Petit test secret avant d'entrer.</p>
+      
+      <div class="form-group">
+        <label for="password-input">Mot de passe</label>
+        <input 
+          type="password" 
+          id="password-input" 
+          placeholder="Entre le mot magique..."
+          autocomplete="off"
+        >
+      </div>
+      
+      <button class="btn btn-primary" id="submit-password">Entrer</button>
+      
+      <p class="error-message" id="error-message"></p>
+      
+      <button class="btn btn-hint" id="hint-btn">Indice</button>
+      <p class="hint-reveal" id="hint-text"></p>
+    </div>
+  </div>
+
+  <!-- ============================================
+       ÉCRAN 2 : Question
+       ============================================ -->
+  <div id="screen-question" class="screen">
+    <div class="card">
+      <h1>La question</h1>
+      <p class="question-text" id="question-text"></p>
+      <p class="hint-text" id="question-hint"></p>
+      
+      <div class="buttons-container">
+        <button class="btn btn-green" id="btn-green"></button>
+        <button class="btn btn-red" id="btn-red"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       ÉCRAN 3 : Victoire
+       ============================================ -->
+  <div id="screen-victory" class="screen">
+    <div class="card">
+      <h1 class="victory-title" id="victory-title"></h1>
+      <p class="victory-message" id="victory-message"></p>
+      <button class="btn btn-replay" id="btn-replay">Rejouer</button>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================
+       CONFIGURATION - Modifiable
+       ============================================ */
+    const CONFIG = {
+      // Mot de passe requis
+      PASSWORD: "Nala",
+      
+      // Indice pour le mot de passe
+      HINT: "Un prenom qui nous suit partout.",
+      
+      // Question principale
+      QUESTION: "Dans la video culte, elle saute depuis le dressing... et ensuite, tu m'appelles comment juste apres ?",
+      
+      // Sous-texte de la question
+      QUESTION_HINT: "Tu connais la regle: mauvaise reponse = le bouton vert devient impossible a ignorer.",
+      
+      // Phrases du bouton vert (réponse positive)
+      GREEN_PHRASES: [
+        "Toi, evidemment.",
+        "Toi.",
+        "Toi, c'est evident.",
+        "Reponse correcte: toi.",
+        "Clique ici, c'est le destin.",
+        "La bonne reponse est la.",
+        "Tu sais que c'est toi.",
+        "Arrete de fuir, c'est toi.",
+        "Toi, toujours toi.",
+        "Accepte l'evidence.",
+        "C'est toi, point final.",
+        "Toi, et personne d'autre."
+      ],
+      
+      // Phrases du bouton rouge (réponse négative)
+      RED_PHRASES: [
+        "Non.",
+        "T'es sure de toi ?",
+        "Recalcul...",
+        "Je te laisse une chance.",
+        "C'est un piege tres simple.",
+        "Dernier essai.",
+        "Vraiment ?",
+        "Tu insistes ?",
+        "Reflechis encore.",
+        "Mauvaise direction.",
+        "Toujours pas ?",
+        "Derniere tentative."
+      ],
+      
+      // Messages de victoire
+      VICTORY_TITLE: "Valide.",
+      VICTORY_MESSAGE: "Acces accorde. Je savais que tu te souvenais."
+    };
+
+    /* ============================================
+       VARIABLES GLOBALES
+       ============================================ */
+    let redClickCount = 0;
+    let greenScale = 1;
+    let redScale = 1;
+
+    /* ============================================
+       ÉLÉMENTS DOM
+       ============================================ */
+    const screenPassword = document.getElementById('screen-password');
+    const screenQuestion = document.getElementById('screen-question');
+    const screenVictory = document.getElementById('screen-victory');
+    const passwordCard = document.getElementById('password-card');
+    const passwordInput = document.getElementById('password-input');
+    const submitPassword = document.getElementById('submit-password');
+    const errorMessage = document.getElementById('error-message');
+    const hintBtn = document.getElementById('hint-btn');
+    const hintText = document.getElementById('hint-text');
+    const questionText = document.getElementById('question-text');
+    const questionHint = document.getElementById('question-hint');
+    const btnGreen = document.getElementById('btn-green');
+    const btnRed = document.getElementById('btn-red');
+    const victoryTitle = document.getElementById('victory-title');
+    const victoryMessage = document.getElementById('victory-message');
+    const btnReplay = document.getElementById('btn-replay');
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const ctx = confettiCanvas.getContext('2d');
+
+    /* ============================================
+       INITIALISATION
+       ============================================ */
+    function init() {
+      // Vérification anti-curieux
+      if (!sessionStorage.getItem('authenticated')) {
+        showScreen('password');
+      } else {
+        showScreen('question');
+      }
+      
+      // Initialiser les textes
+      questionText.textContent = CONFIG.QUESTION;
+      questionHint.textContent = CONFIG.QUESTION_HINT;
+      hintText.textContent = CONFIG.HINT;
+      btnGreen.textContent = CONFIG.GREEN_PHRASES[0];
+      btnRed.textContent = CONFIG.RED_PHRASES[0];
+      victoryTitle.textContent = CONFIG.VICTORY_TITLE;
+      victoryMessage.textContent = CONFIG.VICTORY_MESSAGE;
+      
+      // Réinitialiser les compteurs
+      redClickCount = 0;
+      greenScale = 1;
+      redScale = 1;
+      updateButtonScales();
+      
+      // Configurer le canvas
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+    }
+
+    /* ============================================
+       GESTION DES ÉCRANS
+       ============================================ */
+    function showScreen(screenName) {
+      screenPassword.classList.remove('active');
+      screenQuestion.classList.remove('active');
+      screenVictory.classList.remove('active');
+      
+      switch(screenName) {
+        case 'password':
+          screenPassword.classList.add('active');
+          passwordInput.focus();
+          break;
+        case 'question':
+          screenQuestion.classList.add('active');
+          break;
+        case 'victory':
+          screenVictory.classList.add('active');
+          startConfetti();
+          break;
+      }
+    }
+
+    /* ============================================
+       ÉCRAN MOT DE PASSE
+       ============================================ */
+    function checkPassword() {
+      const value = passwordInput.value.trim();
+      
+      if (value === CONFIG.PASSWORD) {
+        // Succès
+        sessionStorage.setItem('authenticated', 'true');
+        errorMessage.textContent = '';
+        
+        // Transition fluide
+        passwordCard.style.opacity = '0';
+        passwordCard.style.transform = 'translateY(-20px)';
+        
+        setTimeout(() => {
+          showScreen('question');
+          passwordCard.style.opacity = '1';
+          passwordCard.style.transform = 'translateY(0)';
+        }, 400);
+      } else {
+        // Erreur
+        errorMessage.textContent = 'Ce n\'est pas tout a fait ca...';
+        passwordCard.classList.add('shake');
+        
+        setTimeout(() => {
+          passwordCard.classList.remove('shake');
+        }, 500);
+        
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    }
+
+    // Événements mot de passe
+    submitPassword.addEventListener('click', checkPassword);
+    
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+
+    // Indice
+    hintBtn.addEventListener('click', () => {
+      hintText.classList.toggle('visible');
+    });
+
+    /* ============================================
+       ÉCRAN QUESTION
+       ============================================ */
+    function updateButtonScales() {
+      btnGreen.style.transform = `scale(${greenScale})`;
+      btnRed.style.transform = `scale(${redScale})`;
+    }
+
+    function updateButtonTexts() {
+      const greenIndex = Math.min(redClickCount, CONFIG.GREEN_PHRASES.length - 1);
+      const redIndex = Math.min(redClickCount, CONFIG.RED_PHRASES.length - 1);
+      
+      btnGreen.textContent = CONFIG.GREEN_PHRASES[greenIndex];
+      btnRed.textContent = CONFIG.RED_PHRASES[redIndex];
+    }
+
+    // Clic bouton rouge
+    btnRed.addEventListener('click', () => {
+      redClickCount++;
+      
+      // Agrandir le vert, rétrécir le rouge
+      greenScale = Math.min(greenScale + 0.08, 1.6);
+      redScale = Math.max(redScale - 0.03, 0.7);
+      updateButtonScales();
+      
+      // Mettre à jour les textes
+      updateButtonTexts();
+      
+      // Vibration si disponible
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      
+      // Animation micro-vibration CSS
+      btnRed.classList.add('vibrate');
+      setTimeout(() => {
+        btnRed.classList.remove('vibrate');
+      }, 300);
+    });
+
+    // Clic bouton vert
+    btnGreen.addEventListener('click', () => {
+      showScreen('victory');
+    });
+
+    /* ============================================
+       ÉCRAN VICTOIRE - CONFETTIS
+       ============================================ */
+    let confetti = [];
+    let animationId = null;
+
+    function resizeCanvas() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+
+    function createConfetti() {
+      const colors = ['#e8788a', '#f4a5b0', '#7ec8a3', '#a8e6cf', '#b8a9c9', '#ffecd2', '#fcb69f'];
+      
+      for (let i = 0; i < 150; i++) {
+        confetti.push({
+          x: Math.random() * confettiCanvas.width,
+          y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+          size: Math.random() * 10 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedY: Math.random() * 3 + 2,
+          speedX: Math.random() * 2 - 1,
+          rotation: Math.random() * 360,
+          rotationSpeed: Math.random() * 10 - 5
+        });
+      }
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      
+      confetti.forEach((c, index) => {
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.rotate(c.rotation * Math.PI / 180);
+        ctx.fillStyle = c.color;
+        ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.6);
+        ctx.restore();
+        
+        // Mise à jour position
+        c.y += c.speedY;
+        c.x += c.speedX;
+        c.rotation += c.rotationSpeed;
+        
+        // Recycler les confettis qui sortent
+        if (c.y > confettiCanvas.height + 20) {
+          confetti[index].y = -20;
+          confetti[index].x = Math.random() * confettiCanvas.width;
+        }
+      });
+      
+      animationId = requestAnimationFrame(drawConfetti);
+    }
+
+    function startConfetti() {
+      confetti = [];
+      createConfetti();
+      drawConfetti();
+      
+      // Arrêter après 5 secondes
+      setTimeout(() => {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }
+      }, 5000);
+    }
+
+    // Bouton rejouer
+    btnReplay.addEventListener('click', () => {
+      // Réinitialiser tout
+      sessionStorage.removeItem('authenticated');
+      passwordInput.value = '';
+      errorMessage.textContent = '';
+      hintText.classList.remove('visible');
+      redClickCount = 0;
+      greenScale = 1;
+      redScale = 1;
+      updateButtonScales();
+      btnGreen.textContent = CONFIG.GREEN_PHRASES[0];
+      btnRed.textContent = CONFIG.RED_PHRASES[0];
+      
+      // Arrêter les confettis
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      }
+      confetti = [];
+      
+      showScreen('password');
+    });
+
+    /* ============================================
+       DÉMARRAGE
+       ============================================ */
+    init();
+  </script>
+</body>
+</html>
