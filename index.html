@@ -111,7 +111,7 @@
       background: #faf8fa;
     }
 
-    input[type="password":focus] {
+    input[type="password"]:focus {
       outline: none;
       border-color: #e8788a;
       box-shadow: 0 0 0 4px rgba(232, 120, 138, 0.15);
@@ -303,6 +303,18 @@
       animation: float 6s ease-in-out infinite;
     }
 
+    /* Chat qui rebondit */
+    #bouncing-cat {
+      position: fixed;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      z-index: 5;
+      pointer-events: none;
+    }
+
     @media (max-width: 480px) {
       .card { padding: 32px 24px; }
       h1 { font-size: 1.5rem; }
@@ -311,12 +323,16 @@
       .buttons-container { flex-direction: column; align-items: center; }
       .btn-green, .btn-red { width: 100%; max-width: 250px; }
       .floating-image { width: 80px; height: 80px; }
+      #bouncing-cat { width: 70px; height: 70px; }
     }
   </style>
 </head>
 <body>
   <canvas id="confetti-canvas"></canvas>
   <div class="floating-images-container" id="floating-container"></div>
+  
+  <!-- Chat qui rebondit sur la page d'accueil -->
+  <img id="bouncing-cat" src="Le%20chat.jpeg" alt="Nala" style="display: none;">
 
   <div id="screen-password" class="screen active">
     <div class="card" id="password-card">
@@ -401,12 +417,20 @@
         "WhatsApp%20Image%202026-02-17%20at%2019.37.05%20(4).jpeg",
         "WhatsApp%20Image%202026-02-17%20at%2019.37.05%20(5).jpeg",
         "WhatsApp%20Image%202026-02-17%20at%2019.37.05.jpeg"
-      ]
+      ],
+      CAT_IMAGE: "Le%20chat.jpeg"
     };
 
     let redClickCount = 0;
     let greenScale = 1;
     let floatingImagesInterval = null;
+    
+    // Variables pour le chat qui rebondit
+    let catX = 50;
+    let catY = 50;
+    let catSpeedX = 2;
+    let catSpeedY = 2;
+    let catAnimationId = null;
 
     const screenPassword = document.getElementById('screen-password');
     const screenQuestion = document.getElementById('screen-question');
@@ -428,6 +452,7 @@
     const confettiCanvas = document.getElementById('confetti-canvas');
     const ctx = confettiCanvas.getContext('2d');
     const floatingContainer = document.getElementById('floating-container');
+    const bouncingCat = document.getElementById('bouncing-cat');
 
     function init() {
       if (!sessionStorage.getItem('authenticated')) {
@@ -450,15 +475,77 @@
       window.addEventListener('resize', resizeCanvas);
     }
 
+    /* ============================================
+       CHAT QUI REBONDIT
+       ============================================ */
+    function startBouncingCat() {
+      bouncingCat.style.display = 'block';
+      bouncingCat.src = CONFIG.CAT_IMAGE;
+      
+      // Position initiale aléatoire
+      catX = Math.random() * (window.innerWidth - 100);
+      catY = Math.random() * (window.innerHeight - 100);
+      
+      // Vitesse modérée (ni trop rapide, ni trop lente)
+      catSpeedX = 2 * (Math.random() > 0.5 ? 1 : -1);
+      catSpeedY = 2 * (Math.random() > 0.5 ? 1 : -1);
+      
+      animateBouncingCat();
+    }
+    
+    function stopBouncingCat() {
+      bouncingCat.style.display = 'none';
+      if (catAnimationId) {
+        cancelAnimationFrame(catAnimationId);
+        catAnimationId = null;
+      }
+    }
+    
+    function animateBouncingCat() {
+      const catWidth = bouncingCat.offsetWidth || 100;
+      const catHeight = bouncingCat.offsetHeight || 100;
+      
+      // Mise à jour de la position
+      catX += catSpeedX;
+      catY += catSpeedY;
+      
+      // Rebond sur les bords horizontaux
+      if (catX <= 0) {
+        catX = 0;
+        catSpeedX = Math.abs(catSpeedX);
+      } else if (catX >= window.innerWidth - catWidth) {
+        catX = window.innerWidth - catWidth;
+        catSpeedX = -Math.abs(catSpeedX);
+      }
+      
+      // Rebond sur les bords verticaux
+      if (catY <= 0) {
+        catY = 0;
+        catSpeedY = Math.abs(catSpeedY);
+      } else if (catY >= window.innerHeight - catHeight) {
+        catY = window.innerHeight - catHeight;
+        catSpeedY = -Math.abs(catSpeedY);
+      }
+      
+      // Appliquer la position
+      bouncingCat.style.left = catX + 'px';
+      bouncingCat.style.top = catY + 'px';
+      
+      catAnimationId = requestAnimationFrame(animateBouncingCat);
+    }
+
     function showScreen(screenName) {
       screenPassword.classList.remove('active');
       screenQuestion.classList.remove('active');
       screenVictory.classList.remove('active');
       stopFloatingImages();
+      stopBouncingCat();
+      
       switch(screenName) {
         case 'password':
           screenPassword.classList.add('active');
           passwordInput.focus();
+          startBouncingCat();
           break;
         case 'question':
           screenQuestion.classList.add('active');
@@ -522,7 +609,7 @@
           passwordCard.style.transform = 'translateY(0)';
         }, 400);
       } else {
-        errorMessage.textContent = 'Ce n\'est pas tout a fait ca...';
+        errorMessage.textContent = 'Ce n'est pas tout a fait ca...';
         passwordCard.classList.add('shake');
         setTimeout(() => { passwordCard.classList.remove('shake'); }, 500);
         passwordInput.value = '';
